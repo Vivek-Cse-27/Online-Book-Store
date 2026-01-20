@@ -1,25 +1,37 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
 import './App.css';
+import "./index.css";
 
-function App() {
+// Components
+import { BookList } from './Components/product/bookList';
+import { BookDetails } from './Components/product/bookDetails';
+import { Navbar } from './Components/common/navbar';
+
+// Data
+import { sampleBooks } from "./book.js";
+
+const App = () => {
+  const [selectedBook, setSelectedBook] = useState(null);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="min-h-screen bg-slate-50">
+      <Navbar cartCount={0} />
+      
+      <main className="p-5 md:p-10">
+        <div className="max-w-7xl mx-auto">
+          {/* Directly passing the imported sampleBooks */}
+          <BookList books={sampleBooks} onBookSelect={setSelectedBook} />
+          
+          {selectedBook && (
+            <BookDetails 
+              book={selectedBook} 
+              onClose={() => setSelectedBook(null)} 
+            />
+          )}
+        </div>
+      </main>
     </div>
   );
-}
+};
 
 export default App;
