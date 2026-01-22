@@ -5,6 +5,7 @@ import "./index.css";
 // Components
 // import { BookList } from './Components/product/bookList';
 import { BookDetails } from './Components/product/bookDetails';
+import { Loader } from './Components/common/loader';
 import { Navbar } from './Components/common/navbar';
 import { Home } from "./Pages/home";
 // Data
@@ -15,6 +16,7 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <Loader />
       <Navbar cartCount={0} />
           {/* Home page Added */}
           <Home onBookSelect={setSelectedBook} />

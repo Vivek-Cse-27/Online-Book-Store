@@ -15,7 +15,10 @@ mongoose.connect('mongodb://127.0.0.1:27017/online-bookstore')
   .catch(err => console.log("Database Error: ", err));
 
 // Use Routes
-app.use('/api', apiRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/books', bookRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/cart', cartRoutes);
 
 const PORT = 5006;
 
