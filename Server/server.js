@@ -1,14 +1,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+
+// routes import
 const authRoutes = require('./Routes/authRoutes');
 const bookRoutes = require('./Routes/bookRoutes');
 const orderRoutes = require('./Routes/orderRoutes');
 const cartRoutes = require('./Routes/cartRoutes');
 
+// Middleware import
+const { auth, admin } = require('./Middleware/authMiddleware');
+const errorMiddleware = require('./Middleware/errorMiddleware');
+
 const app = express();
 
-// Middlewares
+// global Middlewares
 app.use(cors());
 app.use(express.json());
 
@@ -22,6 +28,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/cart', cartRoutes);
+
+// Error Handling Middleware (should be the last middleware)
+app.use(errorMiddleware);
 
 const PORT = 5006;
 
