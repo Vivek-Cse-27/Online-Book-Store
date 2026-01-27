@@ -77,13 +77,15 @@
 
 const express = require('express');
 const router = express.Router();
-const { 
-    register, 
-    login, 
-    getUsers, 
-    deleteUser, 
-    forgotPassword, 
-    resetPassword 
+const {
+    register,
+    login,
+    getUsers,
+    deleteUser,
+    forgotPassword,
+    resetPassword,
+    getProfile,
+    updateProfile
 } = require('../Controllers/authController');
 const { auth, admin } = require('../Middleware/authMiddleware'); // Updated path if needed
 
@@ -91,6 +93,9 @@ router.post('/register', register);
 router.post('/login', login);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
+router.get('/profile', auth, getProfile);
+router.put('/profile', auth, updateProfile);
+
 
 // Admin Routes
 router.get('/users', auth, admin, getUsers);

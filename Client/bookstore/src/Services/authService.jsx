@@ -1,9 +1,12 @@
-const API_BASE_URL = 'http://localhost:5000/api/auth';
+import API_BASE_URL from '../apiConfig';
+
+const AUTH_API_URL = `${API_BASE_URL}/auth`;
+
 
 export const authService = {
   login: async (email, password) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${AUTH_API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -21,12 +24,12 @@ export const authService = {
     }
   },
 
-  register: async (name, email, password) => {
+  register: async (name, email, password, phone) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response = await fetch(`${AUTH_API_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, email, password, phone })
       });
 
       if (!response.ok) {
@@ -54,7 +57,7 @@ export const authService = {
         throw new Error('No auth token found');
       }
 
-      const response = await fetch(`${API_BASE_URL}/profile`, {
+      const response = await fetch(`${AUTH_API_URL}/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -79,7 +82,7 @@ export const authService = {
         throw new Error('No auth token found');
       }
 
-      const response = await fetch(`${API_BASE_URL}/profile`, {
+      const response = await fetch(`${AUTH_API_URL}/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

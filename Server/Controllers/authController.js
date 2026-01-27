@@ -9,29 +9,36 @@ const generateToken = require('../Utils/generateToken'); // Using your utility
 const register = async (req, res) => {
     try {
         const { name, email, password, phone } = req.body;
-        
+
         // Check if user exists
         const existingUser = await User.findOne({ email });
         if (existingUser) return res.status(400).json({ error: "User already exists" });
 
         const hashedPassword = await bcrypt.hash(password, 8);
-        
-        const user = new User({ 
-            name, 
-            email, 
-            password: hashedPassword, 
-            phone 
+
+        const user = new User({
+            name,
+            email,
+            password: hashedPassword,
+            phone
         });
-        
+
         await user.save();
-        
+
         // Generate token immediately upon registration
         const token = generateToken(user._id);
-        
+
         res.status(201).json({ message: "User registered successfully", user, token });
     } catch (e) {
-        res.status(400).json({ error: e.message });
+        let errorMessage = 'Registration failed';
+        if (e.code === 11000) {
+            errorMessage = 'Email already exists';
+        } else if (e.message) {
+            errorMessage = e.message;
+        }
+        res.status(400).json({ error: errorMessage });
     }
+
 };
 
 // @desc    Login user
@@ -97,4 +104,35 @@ const resetPassword = async (req, res) => {
     res.json({ message: "Password updated successfully" });
 };
 
-module.exports = { register, login, getUsers, deleteUser, forgotPassword, resetPassword };
+// @desc    Get user profile
+// @route   GET /api/auth/profile
+const getProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId).select('-password');
+        if (!user) return res.status(404).json({ error: "User not found" });
+        res.json(user);
+    } catch (e) {
+        res.status(500).json({ error: "Server Error" });
+    }
+};
+
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+const updateProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        const { name, phone, email } = req.body;
+        if (name) user.name = name;
+        if (phone) user.phone = phone;
+        if (email) user.email = email;
+
+        await user.save();
+        res.json({ message: "Profile updated successfully", user });
+    } catch (e) {
+        res.status(400).json({ error: e.message });
+    }
+};
+
+module.exports = { register, login, getUsers, deleteUser, forgotPassword, resetPassword, getProfile, updateProfile };

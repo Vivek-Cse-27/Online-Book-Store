@@ -1,4 +1,8 @@
 import React, { createContext, useState, useCallback, useEffect } from 'react';
+import API_BASE_URL from '../apiConfig';
+
+const AUTH_API_URL = `${API_BASE_URL}/auth`;
+
 
 export const AuthContext = createContext();
 
@@ -20,7 +24,7 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${AUTH_API_URL}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -37,7 +41,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('authToken', token);
-      
+
       return { success: true, user: userData };
     } catch (err) {
       setError(err.message);
@@ -47,14 +51,14 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  const register = useCallback(async (name, email, password) => {
+  const register = useCallback(async (name, email, password, phone) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${AUTH_API_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify({ name, email, password, phone })
       });
 
       if (!response.ok) {
@@ -68,7 +72,7 @@ export const AuthProvider = ({ children }) => {
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('authToken', token);
-      
+
       return { success: true, user: userData };
     } catch (err) {
       setError(err.message);
@@ -90,7 +94,7 @@ export const AuthProvider = ({ children }) => {
     setError(null);
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch('http://localhost:5000/api/auth/profile', {
+      const response = await fetch(`${AUTH_API_URL}/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -108,7 +112,7 @@ export const AuthProvider = ({ children }) => {
 
       setUser(updatedUser);
       localStorage.setItem('user', JSON.stringify(updatedUser));
-      
+
       return { success: true, user: updatedUser };
     } catch (err) {
       setError(err.message);

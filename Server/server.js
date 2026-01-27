@@ -1,4 +1,6 @@
+require('dotenv').config();
 const express = require('express');
+
 const mongoose = require('mongoose');
 const cors = require('cors');
 
@@ -37,9 +39,9 @@ const PORT = 5006;
 // Change app.listen to use '0.0.0.0'
 // This tells the server: "Listen to requests from ANY network interface, not just localhost"
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
-    console.log(`Local Access: http://localhost:${PORT}`);
-    // console.log(`Network Access: http://192.168.29.43:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Local Access: http://localhost:${PORT}`);
+  // console.log(`Network Access: http://192.168.29.43:${PORT}`);
 });
 // app.listen(PORT, () => {
 //     console.log(`Server is running on port ${PORT}`);

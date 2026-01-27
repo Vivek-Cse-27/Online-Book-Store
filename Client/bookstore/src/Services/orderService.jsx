@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:5000/api/orders';
+import API_BASE_URL from '../apiConfig';
+
+const ORDERS_API_URL = `${API_BASE_URL}/orders`;
+
 
 export const orderService = {
     // Create a new order
@@ -9,7 +12,7 @@ export const orderService = {
                 throw new Error('Authentication required');
             }
 
-            const response = await fetch(`${API_BASE_URL}`, {
+            const response = await fetch(`${ORDERS_API_URL}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,7 +41,7 @@ export const orderService = {
                 throw new Error('Authentication required');
             }
 
-            const response = await fetch(`${API_BASE_URL}/my-orders`, {
+            const response = await fetch(`${ORDERS_API_URL}/my-orders`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -64,7 +67,7 @@ export const orderService = {
                 throw new Error('Authentication required');
             }
 
-            const response = await fetch(`${API_BASE_URL}/${orderId}`, {
+            const response = await fetch(`${ORDERS_API_URL}/${orderId}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`

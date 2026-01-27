@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../Context/authContext';
 
 export const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
-  const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', phone: '' });
   const [localError, setLocalError] = useState('');
   const { register, isLoading, error: authError } = useAuth();
 
@@ -10,12 +10,12 @@ export const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
     e.preventDefault();
     setLocalError('');
 
-    if (!formData.name || !formData.email || !formData.password) {
+    if (!formData.name || !formData.email || !formData.password || !formData.phone) {
       setLocalError('Please fill in all fields');
       return;
     }
 
-    const result = await register(formData.name, formData.email, formData.password);
+    const result = await register(formData.name, formData.email, formData.password, formData.phone);
 
     if (result.success) {
       onRegisterSuccess();
@@ -58,6 +58,17 @@ export const Register = ({ onSwitchToLogin, onRegisterSuccess }) => {
               placeholder="name@example.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">Phone Number</label>
+            <input
+              type="tel"
+              className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-indigo-600 transition-all outline-none"
+              placeholder="+91 98765 43210"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               required
             />
           </div>

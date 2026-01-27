@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../../Context/cartContext';
+import { orderService } from '../../Services/orderService';
 import toast from 'react-hot-toast';
 
 export const Checkout = ({ onBackToCart }) => {
@@ -14,18 +15,52 @@ export const Checkout = ({ onBackToCart }) => {
     postalCode: '',
     cardNumber: '',
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (Object.values(formData).every((field) => field.trim())) {
-      toast.success('Order placed successfully! 📚');
-      clearCart();
-      onBackToCart();
+      setIsSubmitting(true);
+
+      const orderData = {
+        items: cartItems.map(item => ({
+          bookId: item.id || item._id, // Support both if server uses _id
+          quantity: item.quantity,
+          price: item.price
+        })),
+        totalAmount: getTotalPrice(),
+        shippingAddress: {
+          name: `${formData.firstName} ${formData.lastName}`,
+          email: formData.email,
+          phone: formData.phone,
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.postalCode
+        },
+        paymentDetails: {
+          cardNumber: formData.cardNumber.replace(/\s/g, '').slice(-4) // Just last 4 for safety
+        }
+      };
+
+      const result = await orderService.createOrder(orderData);
+
+      setIsSubmitting(false);
+
+      if (result.success) {
+        toast.success('Order placed successfully! 📚');
+        clearCart();
+        // Redirect to orders page or home
+        setTimeout(() => {
+          onBackToCart(); // Or any other navigation logic
+        }, 1500);
+      } else {
+        toast.error(result.error || 'Failed to place order');
+      }
     } else {
       toast.error('Please fill in all fields');
     }
@@ -63,6 +98,7 @@ export const Checkout = ({ onBackToCart }) => {
                   value={formData.firstName}
                   onChange={handleInputChange}
                   className="p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                  disabled={isSubmitting}
                 />
                 <input
                   type="text"
@@ -71,6 +107,7 @@ export const Checkout = ({ onBackToCart }) => {
                   value={formData.lastName}
                   onChange={handleInputChange}
                   className="p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -81,6 +118,7 @@ export const Checkout = ({ onBackToCart }) => {
                 value={formData.email}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                disabled={isSubmitting}
               />
 
               <input
@@ -90,6 +128,7 @@ export const Checkout = ({ onBackToCart }) => {
                 value={formData.phone}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                disabled={isSubmitting}
               />
 
               <input
@@ -99,6 +138,7 @@ export const Checkout = ({ onBackToCart }) => {
                 value={formData.address}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                disabled={isSubmitting}
               />
 
               <div className="grid grid-cols-2 gap-4">
@@ -109,6 +149,7 @@ export const Checkout = ({ onBackToCart }) => {
                   value={formData.city}
                   onChange={handleInputChange}
                   className="p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                  disabled={isSubmitting}
                 />
                 <input
                   type="text"
@@ -117,6 +158,7 @@ export const Checkout = ({ onBackToCart }) => {
                   value={formData.postalCode}
                   onChange={handleInputChange}
                   className="p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                  disabled={isSubmitting}
                 />
               </div>
 
@@ -129,13 +171,15 @@ export const Checkout = ({ onBackToCart }) => {
                 value={formData.cardNumber}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-slate-200 rounded-lg focus:outline-none focus:border-indigo-600"
+                disabled={isSubmitting}
               />
 
               <button
                 type="submit"
-                className="w-full py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                disabled={isSubmitting || cartItems.length === 0}
+                className={`w-full py-4 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                Place Order
+                {isSubmitting ? 'Placing Order...' : 'Place Order'}
               </button>
             </form>
           </div>
@@ -145,7 +189,7 @@ export const Checkout = ({ onBackToCart }) => {
             <h2 className="text-xl font-bold text-slate-900 mb-6">Order Summary</h2>
             <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between text-sm text-slate-600">
+                <div key={item.id || item._id} className="flex justify-between text-sm text-slate-600">
                   <span>{item.title} x {item.quantity}</span>
                   <span>Rs. {item.price * item.quantity}</span>
                 </div>

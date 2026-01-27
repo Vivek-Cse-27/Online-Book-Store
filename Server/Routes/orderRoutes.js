@@ -52,15 +52,15 @@
 
 const express = require('express');
 const router = express.Router();
-const {  
-    placeOrder, 
-    getMyOrders, 
-    getAllOrders 
+const {
+    placeOrder,
+    getMyOrders,
+    getAllOrders
 } = require('../Controllers/orderController');
 const { auth, admin } = require('../Middleware/authMiddleware');
 
-router.post('/orders', auth, placeOrder);
-router.get('/orders', auth, getMyOrders);
-router.get('/admin/orders', auth, admin, getAllOrders);
+router.post('/', auth, placeOrder);
+router.get('/my-orders', auth, getMyOrders);
+router.get('/admin/all', auth, admin, getAllOrders);
 
 module.exports = router;
