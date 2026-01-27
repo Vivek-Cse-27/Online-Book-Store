@@ -1,4 +1,4 @@
-const User = require('../models/User');
+const User = require('../Models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -52,6 +52,7 @@ const login = async (req, res) => {
         const token = generateToken(user._id);
         res.json({ user, token });
     } catch (e) {
+        console.error('Login Error:', e);
         res.status(500).json({ error: "Server Error" });
     }
 };
@@ -112,6 +113,7 @@ const getProfile = async (req, res) => {
         if (!user) return res.status(404).json({ error: "User not found" });
         res.json(user);
     } catch (e) {
+        console.error('Login Error:', e);
         res.status(500).json({ error: "Server Error" });
     }
 };

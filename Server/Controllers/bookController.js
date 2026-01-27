@@ -1,4 +1,4 @@
-const { Book } = require('../models/Book'); // Destructuring because your model exports { Book }
+const { Book } = require('../Models/book'); // Destructuring because your model exports { Book }
 
 const getBooks = async (req, res) => {
     const books = await Book.find({});
@@ -6,6 +6,7 @@ const getBooks = async (req, res) => {
 };
 
 const addBook = async (req, res) => {
+    console.log('Request to add book received:', req.body);
     try {
         const newBook = new Book(req.body);
         await newBook.save();

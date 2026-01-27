@@ -1,25 +1,34 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useAuth } from '../../Context/authContext';
 
 export const SellerLogin = ({ onLoginSuccess, onBackToStore }) => {
-    const [credentials, setCredentials] = useState({ username: '', password: '' });
-    const [isLoading, setIsLoading] = useState(false);
+    const [credentials, setCredentials] = useState({ email: '', password: '' });
+    const { login, isLoading: authLoading } = useAuth();
+    const [localLoading, setLocalLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setIsLoading(true);
+        setLocalLoading(true);
 
-        // Simulated Seller Authentication
-        setTimeout(() => {
-            if (credentials.username === 'admin' && credentials.password === 'admin') {
+        const result = await login(credentials.email, credentials.password);
+
+        if (result.success) {
+            // Check if user is admin
+            if (result.user.role === 'admin') {
                 toast.success('Seller Portal Accessed!');
                 onLoginSuccess();
             } else {
-                toast.error('Invalid Seller Credentials');
+                toast.error('Access Denied: Not an admin account');
             }
-            setIsLoading(false);
-        }, 800);
+        } else {
+            toast.error(result.error || 'Invalid Seller Credentials');
+        }
+
+        setLocalLoading(false);
     };
+
+    const isLoading = authLoading || localLoading;
 
     return (
         <div className="min-h-[80vh] flex items-center justify-center px-4 bg-slate-50">
@@ -36,13 +45,13 @@ export const SellerLogin = ({ onLoginSuccess, onBackToStore }) => {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div>
-                        <label className="block text-sm font-bold text-slate-700 mb-2">Username</label>
+                        <label className="block text-sm font-bold text-slate-700 mb-2">Admin Email</label>
                         <input
-                            type="text"
+                            type="email"
                             className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-indigo-600 transition-all outline-none"
-                            placeholder="Enter seller username"
-                            value={credentials.username}
-                            onChange={(e) => setCredentials({ ...credentials, username: e.target.value })}
+                            placeholder="Enter admin email"
+                            value={credentials.email}
+                            onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
                             required
                         />
                     </div>
@@ -75,10 +84,11 @@ export const SellerLogin = ({ onLoginSuccess, onBackToStore }) => {
                 </button>
 
                 <div className="mt-8 p-4 bg-indigo-50 rounded-xl border border-indigo-100">
-                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Demo Credentials</p>
-                    <p className="text-xs text-indigo-600 font-bold">User: admin | Pass: admin</p>
+                    <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Notice</p>
+                    <p className="text-xs text-indigo-600 font-bold">Please use your registered admin email and password.</p>
                 </div>
             </div>
         </div>
     );
 };
+

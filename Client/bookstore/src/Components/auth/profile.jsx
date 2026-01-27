@@ -8,7 +8,7 @@ export const Profile = ({ onLogoutSuccess, onAdminClick }) => {
   const userData = user || {
     name: "Guest User",
     email: "guest@example.com",
-    joinedDate: "January 2024",
+    joinedDate: "January 2026",
     totalOrders: 0
   };
 

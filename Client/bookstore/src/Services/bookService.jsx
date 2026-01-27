@@ -58,5 +58,67 @@ export const bookService = {
         } catch (error) {
             return { success: false, error: error.message };
         }
+    },
+
+    // Admin: Add a new book
+    addBook: async (bookData, token) => {
+        try {
+            const response = await fetch(`${BOOKS_API_URL}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(bookData)
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to add book');
+            }
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+
+    // Admin: Update a book
+    updateBook: async (id, bookData, token) => {
+        try {
+            const response = await fetch(`${BOOKS_API_URL}/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(bookData)
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to update book');
+            }
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    },
+
+    // Admin: Delete a book
+    deleteBook: async (id, token) => {
+        try {
+            const response = await fetch(`${BOOKS_API_URL}/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to delete book');
+            }
+            return { success: true, data };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
     }
 };
+

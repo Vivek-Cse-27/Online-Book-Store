@@ -20,6 +20,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Request Debugger
+app.use((req, res, next) => {
+  const fs = require('fs');
+  const log = `${new Date().toISOString()} - ${req.method} ${req.path} - Auth Header: ${req.header('Authorization')}\n`;
+  fs.appendFileSync('request_debug.log', log);
+  next();
+});
+
 // Connect to MongoDB (Replace with your URI if using Atlas)
 mongoose.connect('mongodb://127.0.0.1:27017/online-bookstore')
   .then(() => console.log("Database Connected"))

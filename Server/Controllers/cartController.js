@@ -1,5 +1,5 @@
-const Cart = require('../models/Cart');
-const { Book } = require('../models/Book');
+const Cart = require('../Models/cart');
+const { Book } = require('../Models/book');
 
 const getCart = async (req, res) => {
     // req.userId comes from auth middleware
@@ -32,7 +32,7 @@ const addToCart = async (req, res) => {
 const removeFromCart = async (req, res) => {
     const cart = await Cart.findOne({ user: req.userId });
     if (!cart) return res.status(404).json({ error: "Cart not found" });
-    
+
     cart.items = cart.items.filter(i => i.bookId != req.params.bookId);
     await cart.save();
     res.json(cart);

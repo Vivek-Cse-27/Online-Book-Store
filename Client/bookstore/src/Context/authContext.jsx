@@ -7,16 +7,21 @@ const AUTH_API_URL = `${API_BASE_URL}/auth`;
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const storedUser = localStorage.getItem('user');
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
+  const [token, setToken] = useState(() => localStorage.getItem('authToken'));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Check if user is logged in on mount
+  // We still keep the useEffect if we want to sync between tabs, but it's not strictly necessary for initial load now
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
-    const token = localStorage.getItem('authToken');
-    if (storedUser && token) {
+    const storedToken = localStorage.getItem('authToken');
+    if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
+      setToken(storedToken);
     }
   }, []);
 
@@ -36,11 +41,12 @@ export const AuthProvider = ({ children }) => {
 
       const data = await response.json();
       const userData = data.user;
-      const token = data.token;
+      const authToken = data.token;
 
       setUser(userData);
+      setToken(authToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('authToken', token);
+      localStorage.setItem('authToken', authToken);
 
       return { success: true, user: userData };
     } catch (err) {
@@ -67,11 +73,12 @@ export const AuthProvider = ({ children }) => {
 
       const data = await response.json();
       const userData = data.user;
-      const token = data.token;
+      const authToken = data.token;
 
       setUser(userData);
+      setToken(authToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('authToken', token);
+      localStorage.setItem('authToken', authToken);
 
       return { success: true, user: userData };
     } catch (err) {
@@ -84,6 +91,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     setUser(null);
+    setToken(null);
     setError(null);
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
@@ -93,12 +101,12 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const token = localStorage.getItem('authToken');
+      const storedToken = localStorage.getItem('authToken');
       const response = await fetch(`${AUTH_API_URL}/profile`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${storedToken}`
         },
         body: JSON.stringify(updatedData)
       });
@@ -124,6 +132,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    token,
     isLoading,
     error,
     login,

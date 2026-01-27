@@ -1,5 +1,5 @@
-const Order = require('../models/order'); // Using default export from your file
-const { Book } = require('../models/Book');
+const Order = require('../Models/order'); // Using default export from your file
+const { Book } = require('../Models/book');
 
 const placeOrder = async (req, res) => {
     const { items, totalAmount } = req.body;

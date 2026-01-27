@@ -1,4 +1,5 @@
 const errorMiddleware = (err, req, res, next) => {
+    console.error('Logged Error:', err);
     // Default to 500 Server Error
     let statusCode = 500;
     let errorMessage = 'Server Error';
@@ -8,7 +9,7 @@ const errorMiddleware = (err, req, res, next) => {
         statusCode = 401;
         errorMessage = 'Please authenticate.';
     }
-    
+
     // Handle Access Denied Errors (from admin middleware)
     else if (err.type === 'ACCESS_DENIED') {
         statusCode = 403;
