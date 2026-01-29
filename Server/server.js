@@ -28,9 +28,10 @@ app.use((req, res, next) => {
   next();
 });
 
-// Connect to MongoDB (Replace with your URI if using Atlas)
-mongoose.connect('mongodb://127.0.0.1:27017/online-bookstore')
-  .then(() => console.log("Database Connected"))
+// Connect to MongoDB
+const mongoURI = process.env.MONGO_DB_URI || 'mongodb://127.0.0.1:27017/online-bookstore';
+mongoose.connect(mongoURI)
+  .then(() => console.log("Database Connected to: ", mongoURI.includes('mongodb+srv') ? "Atlas (Online)" : "Local MongoDB"))
   .catch(err => console.log("Database Error: ", err));
 
 // Use Routes
@@ -42,14 +43,10 @@ app.use('/api/cart', cartRoutes);
 // Error Handling Middleware (should be the last middleware)
 app.use(errorMiddleware);
 
-const PORT = 5006;
+const PORT = process.env.PORT || 5006;
 
-// Change app.listen to use '0.0.0.0'
-// This tells the server: "Listen to requests from ANY network interface, not just localhost"
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
-  console.log(`Local Access: http://localhost:${PORT}`);
-  // console.log(`Network Access: http://192.168.29.43:${PORT}`);
 });
 // app.listen(PORT, () => {
 //     console.log(`Server is running on port ${PORT}`);

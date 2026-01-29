@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('./Models/user');
 
@@ -11,7 +12,8 @@ async function makeAdmin() {
     }
 
     try {
-        await mongoose.connect('mongodb://127.0.0.1:27017/online-bookstore');
+        const mongoURI = process.env.MONGO_DB_URI || 'mongodb://127.0.0.1:27017/online-bookstore';
+        await mongoose.connect(mongoURI);
 
         const user = await User.findOneAndUpdate(
             { email: email },
